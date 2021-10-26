@@ -30,7 +30,7 @@ public class MultipleFilesUploadController {
      * @return FileResponse
      */
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<FileUploadResponse> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         try {
             createDirIfNotExist();
 
@@ -38,7 +38,6 @@ public class MultipleFilesUploadController {
 
             // read and write the file to the local folder
             Arrays.asList(files).stream().forEach(file -> {
-
                 byte[] bytes = new byte[0];
                 try {
                     bytes = file.getBytes();
@@ -47,14 +46,14 @@ public class MultipleFilesUploadController {
                 } catch (IOException e) {
 
                 }
-
             });
+
             return ResponseEntity.status(HttpStatus.OK)
-                    .body("Files uploaded successfully: " + fileNames);
+                    .body(new FileUploadResponse("Files uploaded successfully: " + fileNames));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
-                    .body("Exception to upload files!");
+                    .body(new FileUploadResponse("Exception to upload files!"));
         }
     }
 
@@ -76,7 +75,7 @@ public class MultipleFilesUploadController {
     @GetMapping("/files")
     public ResponseEntity<String[]> getListFiles() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body( new java.io.File(FileUtil.folderPath).list());
+                .body( new File(FileUtil.folderPath).list());
     }
 
 }
